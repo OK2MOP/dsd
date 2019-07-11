@@ -30,6 +30,10 @@ playMbeFiles (dsd_opts * opts, dsd_state * state, int argc, char **argv)
       sprintf (opts->mbe_in_file, "%s", argv[i]);
       openMbeInFile (opts, state);
       mbe_initMbeParms (state->cur_mp, state->prev_mp, state->prev_mp_enhanced);
+      if (state->mbe_file_type == 2)
+        {
+	      openMbeOutFile(opts, state);
+        }
       printf ("playing %s\n", opts->mbe_in_file);
       while (feof (opts->mbe_in_f) == 0)
         {
@@ -62,10 +66,20 @@ playMbeFiles (dsd_opts * opts, dsd_state * state, int argc, char **argv)
                   playSynthesizedVoice (opts, state);
                 }
             }
+          else if (state->mbe_file_type == 2)
+            {
+                  char ambe_f[4][24];
+                  readAmbe3600Data (opts, state, ambe_f);
+                  processMbeFrame (opts, state, NULL, ambe_f, NULL);
+            }
           if (exitflag == 1)
             {
               cleanupAndExit (opts, state);
             }
+        }
+      if (state->mbe_file_type == 2)
+        {
+	      closeMbeOutFile(opts, state);
         }
     }
 }

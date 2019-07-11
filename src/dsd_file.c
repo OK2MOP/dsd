@@ -16,6 +16,7 @@
  */
 
 #include "dsd.h"
+#include "dmr_const.h"
 
 void
 saveImbe4400Data (dsd_opts * opts, dsd_state * state, char *imbe_d)
@@ -99,6 +100,44 @@ readImbe4400Data (dsd_opts * opts, dsd_state * state, char *imbe_d)
 }
 
 int
+readAmbe3600Data (dsd_opts * opts, dsd_state * state, char ambe_fr[4][24])
+{
+  int i, j;
+  unsigned char b, dibit, data[9];
+  const int *w, *x, *y, *z;
+  w = rW;
+  x = rX;
+  y = rY;
+  z = rZ;
+  for (i = 0; i < 9; i++)
+    {
+      b = fgetc (opts->mbe_in_f);
+      if (feof (opts->mbe_in_f))
+        {
+          return (1);
+        }
+      data[i] = b;
+    }
+  for (i = 0; i < 9; i++)
+    {
+      b = data[i];
+      for (j = 0; j < 4; j++)
+        {
+          dibit = ((b & 192) >> 6);
+          ambe_fr[*w][*x] = (1 & (dibit >> 1)); // bit 1
+          ambe_fr[*y][*z] = (1 & dibit);        // bit 0
+          b = b << 2;
+          b = b & 255;
+          w++;
+          x++;
+          y++;
+          z++;
+        }
+    }
+  return (0);
+}
+
+int
 readAmbe2450Data (dsd_opts * opts, dsd_state * state, char *ambe_d)
 {
 
@@ -151,6 +190,10 @@ openMbeInFile (dsd_opts * opts, dsd_state * state)
   if (strstr (cookie, ".amb") != NULL)
     {
       state->mbe_file_type = 1;
+    }
+  else if (strstr (cookie, ".dmr") != NULL)
+    {
+      state->mbe_file_type = 2;
     }
   else if (strstr (cookie, ".imb") != NULL)
     {
@@ -264,6 +307,7 @@ openMbeOutFile (dsd_opts * opts, dsd_state * state)
 
   sprintf(opts->mbe_out_path, "%s%s", opts->mbe_out_dir, opts->mbe_out_file);
 
+  fprintf(stderr, "Opening file: %s\n", opts->mbe_out_file);
   opts->mbe_out_f = fopen (opts->mbe_out_path, "w");
   if (opts->mbe_out_f == NULL)
     {

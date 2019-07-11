@@ -277,6 +277,7 @@ void saveImbe4400Data (dsd_opts * opts, dsd_state * state, char *imbe_d);
 void saveAmbe2450Data (dsd_opts * opts, dsd_state * state, char *ambe_d);
 int readImbe4400Data (dsd_opts * opts, dsd_state * state, char *imbe_d);
 int readAmbe2450Data (dsd_opts * opts, dsd_state * state, char *ambe_d);
+int readAmbe3600Data (dsd_opts * opts, dsd_state * state, char ambe_fr[4][24]);
 void openMbeInFile (dsd_opts * opts, dsd_state * state);
 void closeMbeOutFile (dsd_opts * opts, dsd_state * state);
 void openMbeOutFile (dsd_opts * opts, dsd_state * state);
