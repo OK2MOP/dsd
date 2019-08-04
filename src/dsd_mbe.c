@@ -30,7 +30,7 @@ playMbeFiles (dsd_opts * opts, dsd_state * state, int argc, char **argv)
       sprintf (opts->mbe_in_file, "%s", argv[i]);
       openMbeInFile (opts, state);
       mbe_initMbeParms (state->cur_mp, state->prev_mp, state->prev_mp_enhanced);
-      if (state->mbe_file_type == 2)
+      if ((state->mbe_file_type == 2) && (opts->mbe_out_dir[0] != 0) && (opts->mbe_out_f == NULL))
         {
 	      openMbeOutFile(opts, state);
         }
